@@ -57,6 +57,30 @@ app.post('/api/signup', async(req, res)=>{
 }
 });
 
+//Login 
+app.post('/api/login', async(req, res)=>{
+    try{
+        const {email, password} = req.body;
+        if(!email || !password){
+            return req.status(400).json({message:"Email and password are required"});
+        }
+        // Find the signup email
+        const existinguser = await Signup.findOne({email});
+        if(!existinguser){
+            return res.status(400).json({message:"Invalid Email or Password"});
+        }
+        if(existinguser.password!=password){
+            return res.status(400).json({message:"Invalid Password"});
+        }
+        res.status(200).json({message:"Login Successfull", signup:existinguser})
+    }
+    catch(error){
+        console.error("Error During Login",error);
+        res.status(500).json({message:"Error During Login"});
+
+    }
+})
+
 const PORT = 3000;
 app.listen(PORT, ()=>{
     console.log(`Server is running on port ${PORT}`);
